@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import cls from '../../assets/images/cls.jpg';
 import { Link } from 'react-router-dom';
+import { AuthCheck } from 'reactfire';
 
 interface Props{
     title: string;
@@ -63,29 +64,36 @@ export const Home = (props: Props) => {
             <nav>
                 <div className={classes.navbar_container}>
                     <h1 className={ `${classes.logo} `}>
-                        <Link to="/" className={ `${classes.logo_a} ${classes.logo_navigation}` }>Car Inventory</Link>
+                        <a href="#" className={ `${classes.logo_a} ${classes.logo_navigation}` }>The Car Depot</a>
                     </h1>
                     <ul className={ `${classes.navigation} ${classes.logo_navigation}` }>
                         <li>
-                            <Link to="/" className={classes.nav_a}>Home</Link>
+                            <Link to='/' href="" className={classes.nav_a}>Home</Link>
                         </li>
-                        <li>
-                            <Link to="/signin" className={classes.nav_a}>Sign In</Link>
-                        </li>
+                        <AuthCheck fallback={
+                            <li>
+                                <Link to="/signin" className={classes.nav_a}>Sign In</Link>
+                            </li>
+                        }>
+                        
                         <li>
                             <Link to="/dashboard" className={classes.nav_a}>Dashboard</Link>
                         </li>
+                        <li>
+                            <Link to="/signin" className={classes.nav_a}>Sign Out</Link>
+                        </li>
+                        </AuthCheck>
                     </ul>
                 </div>
             </nav>
             <main className={classes.main}>
                 <div className={classes.main_text}>
                     <h1>{ props.title }</h1>
-                    <p>Welcome to the Christian's Car Inventory</p>
-                    <Button color='primary' variant="contained">Click Me</Button>
+                    <p>Check out my cars!</p>
+                    <Button color='primary' variant="contained">SignIn</Button>
                 </div>
             </main>
         </div>
     )
-}
+};
 

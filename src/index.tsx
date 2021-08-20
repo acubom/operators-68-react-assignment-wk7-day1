@@ -5,30 +5,37 @@ import reportWebVitals from './reportWebVitals';
 import './styles.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
-// import { store } from './redux/store';
+import { store } from './redux/store';
+import { FirebaseAppProvider, AuthCheck } from 'reactfire'; 
+import 'firebase/auth'; 
+import { firebaseConfig } from './firebaseConfig' 
 
 ReactDOM.render(
     <React.StrictMode>
-        <Router>
+      <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+        <Provider store = { store }>
+          <Router>
             <Switch>
-
-                <Route exact path='/'>
-                    <Home title={'Cars Inventory'} />
-                </Route>
-
-                <Route path='/dashboard'>
-                    <Dashboard />
-                </Route>
-
-                <Route path='/signin'>
-                    <SignIn />
-                </Route>
-
+  
+              <Route exact path='/'>
+                <Home title={'Cars Inventory'}/>
+              </Route>
+  
+              <Route path='/dashboard'>
+                <Dashboard></Dashboard>
+              </Route>
+  
+              <Route path='/signin'>
+                <SignIn></SignIn>
+              </Route>
+  
             </Switch>
-        </Router>
+          </Router>
+        </Provider>
+      </FirebaseAppProvider>
     </React.StrictMode>,
     document.getElementById('root')
-);
+  );
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

@@ -1,51 +1,96 @@
-import React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@material-ui/data-grid';
+import React, { useState } from 'react';
+import { DataGrid, GridColDef, GridValueGetterParams, GridRowModel } from '@material-ui/data-grid';
+import { server_calls } from '../../api';
+import { useGetData } from '../../custom-hooks';
+import {
+    Button, 
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle
+} from '@material-ui/core';
+import { CarForm } from '../../components/CarForm';
+
+interface gridData {
+    id?: string;
+}
 
 const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'firstName', headerName: 'First name', width: 130 },
-    { field: 'lastName', headerName: 'Last name', width: 130 },
+    { field: 'year', headerName: 'Year', width: 130 },
+    { field: 'make', headerName: 'Make', width: 130 },
+    { field: 'model', headerName: 'Model', width: 130 },
+    { field: 'color', headerName: 'Color', width: 130 },
+    { field: 'condition', headerName: 'Condition', width: 130 },
     {
-        field: 'firstName',
-        headerName: 'First name',
-        width: 150,
+        field: 'price',
+        headerName: 'Price',
+        type: 'string',
+        width: 90,
     },
     {
-        field: 'lastName',
-        headerName: 'Last name',
-        width: 150,
+        field: 'dimensions',
+        headerName: 'Dimensions',
+        type: 'string',
+        width: 90,
     },
     {
-        field: 'age',
-        headerName: 'Age',
-        type: 'number',
-        width: 110,
+        field: 'weight',
+        headerName: 'Weight',
+        type: 'string',
+        width: 90,
     },
-    {
-        field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable.',
-        sortable: false,
-        width: 160,
-        valueGetter: (params: GridValueGetterParams) =>
-            `${params.getValue(params.id,'firstName') || ''} ${params.getValue(params.id,'lastName') || ''}`,
-    },
-];
-
-const rows = [
-    { id: 1, lastName: 'Haley', firstName: 'Bobi', age: 35 },
-    { id: 2, lastName: 'Tompkins', firstName: 'Christian', age: 42 },
-    { id: 3, lastName: 'Idem', firstName: 'Constance', age: 45 },
-    { id: 4, lastName: 'Ubom', firstName: 'Eddie', age: 16 },
-    { id: 5, lastName: 'Haley', firstName: 'Landin', age: 44 },
-    { id: 6, lastName: 'Logan', firstName: 'Madden', age: 36 },
-];
+]
 
 export const DataTable = () => {
+
+    let { CarData, getData } = useGetData();
+    let [open, setOpen] = useState(false);
+    let [gridData, setData] = useState<gridData>({ id: '' });
+
+    let handleOpen = () => {
+        setOpen(true)
+    }
+
+    let handleClose = () => {
+        setOpen(false)
+    }
+
+    let handleCheckbox = (id: GridRowModel) => {
+        if (id[0] === undefined) {
+            setData({ id: '' })
+        } else {
+            setData({ id: id[0].toString() })
+        }
+    }
+
+    let deleteData = () => {
+        server_calls.delete(gridData.id!)
+        getData()
+    }
+    
+
     return (
-        <div style={{ height: 700, width: '100%' }}>
+        <div style={{ height: 400, width: '100%' }}>
             <h2>Cars In Inventory</h2>
-            <DataGrid rows={rows} columns={columns} pageSize={rows.length} checkboxSelection />
+            <DataGrid rows={CarData} columns={columns} pageSize={5} checkboxSelection onSelectionModelChange={handleCheckbox} />
+            {console.log(gridData)}
+            <Button onClick={handleOpen}>Update</Button>
+            <Button variant="contained" color="secondary" onClick={deleteData}>Delete</Button>
+
+            {/*Dialog Pop Up begin */}
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Update Car</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>Update Car</DialogContentText>
+                    <CarForm id={gridData.id!} />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">Cancel</Button>
+                    <Button onClick={handleClose} color="primary">Done</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
